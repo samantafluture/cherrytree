@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: cherrytree-db
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: cherrytree
+      POSTGRES_PASSWORD: cherrytree_dev
+      POSTGRES_DB: cherrytree
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U cherrytree']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
