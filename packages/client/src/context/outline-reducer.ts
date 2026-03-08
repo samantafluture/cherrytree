@@ -38,6 +38,7 @@ export type OutlineAction =
       type: 'SET_SYNC_STATUS';
       payload: { status: OutlineState['syncStatus'] };
     }
+  | { type: 'REPLACE_NODE'; payload: { tempId: string; node: Node } }
   | { type: 'UNDO' }
   | { type: 'REDO' };
 
@@ -135,6 +136,17 @@ function applyAction(
         position: action.payload.position,
       });
       return { ...state, nodes, rootIds: deriveRootIds(nodes) };
+    }
+    case 'REPLACE_NODE': {
+      const nodes = new Map(state.nodes);
+      nodes.delete(action.payload.tempId);
+      nodes.set(action.payload.node.id, action.payload.node);
+      // Preserve focus across temp→real ID swap
+      const focusedNodeId =
+        state.focusedNodeId === action.payload.tempId
+          ? action.payload.node.id
+          : state.focusedNodeId;
+      return { ...state, nodes, rootIds: deriveRootIds(nodes), focusedNodeId };
     }
     case 'ZOOM_TO':
       return { ...state, zoomedNodeId: action.payload.nodeId };

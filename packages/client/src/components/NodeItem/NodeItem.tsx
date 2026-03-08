@@ -85,7 +85,10 @@ export const NodeItem = memo(function NodeItem({
       }
       sel?.removeAllRanges();
       sel?.addRange(range);
-      dispatch({ type: 'FOCUS_NODE', payload: { nodeId: null } });
+      // Defer clearing so REPLACE_NODE can transfer focusedNodeId before it's nulled
+      requestAnimationFrame(() => {
+        dispatch({ type: 'FOCUS_NODE', payload: { nodeId: null } });
+      });
     }
   }, [focusedNodeId, node.id, dispatch]);
 

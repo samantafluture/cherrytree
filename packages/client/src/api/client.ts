@@ -39,6 +39,11 @@ async function request<T>(
     headers['Authorization'] = `Bearer ${authToken}`;
   }
 
+  // Only set Content-Type when there's a body to send
+  if (!options.body) {
+    delete headers['Content-Type'];
+  }
+
   const res = await fetch(path, { ...options, headers });
   const body = (await res.json()) as ApiResponse<T>;
 

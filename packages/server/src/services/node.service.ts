@@ -22,12 +22,27 @@ import {
 
 type NodeRow = typeof nodes.$inferSelect;
 
+/** Map snake_case raw SQL rows to camelCase NodeRow. */
+function mapRow(row: Record<string, unknown>): NodeRow {
+  return {
+    id: row.id as string,
+    outlineId: row.outline_id as string,
+    parentId: (row.parent_id as string) ?? null,
+    content: row.content as string,
+    position: row.position as number,
+    isCompleted: row.is_completed as boolean,
+    isCollapsed: row.is_collapsed as boolean,
+    createdAt: new Date(row.created_at as string),
+    updatedAt: new Date(row.updated_at as string),
+  };
+}
+
 export class NodeService {
   constructor(private db: Database) {}
 
   /** Retrieve the full tree for an outline using a recursive CTE. */
   async getTree(outlineId: string): Promise<NodeRow[]> {
-    return this.db.execute(sql`
+    const rows = (await this.db.execute(sql`
       WITH RECURSIVE tree AS (
         SELECT *, 0 AS depth
         FROM nodes
@@ -38,12 +53,13 @@ export class NodeService {
         INNER JOIN tree t ON n.parent_id = t.id
       )
       SELECT * FROM tree ORDER BY depth, position
-    `) as unknown as NodeRow[];
+    `)) as unknown as Record<string, unknown>[];
+    return rows.map(mapRow);
   }
 
   /** Retrieve a subtree rooted at a specific node (for zoom). */
   async getSubtree(nodeId: string): Promise<NodeRow[]> {
-    return this.db.execute(sql`
+    const rows = (await this.db.execute(sql`
       WITH RECURSIVE subtree AS (
         SELECT *, 0 AS depth
         FROM nodes WHERE id = ${nodeId}
@@ -53,7 +69,8 @@ export class NodeService {
         INNER JOIN subtree s ON n.parent_id = s.id
       )
       SELECT * FROM subtree ORDER BY depth, position
-    `) as unknown as NodeRow[];
+    `)) as unknown as Record<string, unknown>[];
+    return rows.map(mapRow);
   }
 
   /** Get a single node by ID. */

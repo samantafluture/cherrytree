@@ -22,19 +22,36 @@ export function useNodeActions(outlineId: string) {
 
   const createNode = useCallback(
     async (content: string, parentId: string | null, position?: number) => {
-      dispatch({ type: 'SET_SYNC_STATUS', payload: { status: 'pending' } });
-      const res = await api.nodes.create(
+      // Optimistic: add a temporary node and focus it immediately
+      const tempId = `temp-${crypto.randomUUID()}`;
+      const tempNode = {
+        id: tempId,
         outlineId,
-        content,
         parentId,
-        position,
-      );
+        content,
+        position: position ?? 0,
+        isCompleted: false,
+        isCollapsed: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      dispatch({ type: 'ADD_NODE', payload: { node: tempNode } });
+      dispatch({ type: 'FOCUS_NODE', payload: { nodeId: tempId } });
+      dispatch({ type: 'SET_SYNC_STATUS', payload: { status: 'pending' } });
+
+      const res = await api.nodes.create(outlineId, content, parentId, position);
       if (res.data) {
-        dispatch({ type: 'ADD_NODE', payload: { node: res.data } });
+        dispatch({
+          type: 'REPLACE_NODE',
+          payload: { tempId, node: res.data },
+        });
+        // Re-focus the real node so it stays focused after temp→real swap
         dispatch({ type: 'FOCUS_NODE', payload: { nodeId: res.data.id } });
         dispatch({ type: 'SET_SYNC_STATUS', payload: { status: 'synced' } });
         return res.data;
       }
+      // Rollback on error
+      dispatch({ type: 'DELETE_NODE', payload: { id: tempId } });
       dispatch({ type: 'SET_SYNC_STATUS', payload: { status: 'error' } });
       return null;
     },

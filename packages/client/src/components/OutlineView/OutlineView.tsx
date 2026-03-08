@@ -40,8 +40,11 @@ export function OutlineView({
   const [searchOpen, setSearchOpen] = useState(false);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const titleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isTitleEditingRef = useRef(false);
 
+  // Sync title from props only when changed externally (not during editing)
   useEffect(() => {
+    if (isTitleEditingRef.current) return;
     if (titleRef.current && titleRef.current.textContent !== outlineTitle) {
       titleRef.current.textContent = outlineTitle;
     }
@@ -50,11 +53,15 @@ export function OutlineView({
   const handleTitleInput = useCallback(() => {
     const newTitle = titleRef.current?.textContent?.trim() ?? '';
     if (!newTitle) return;
+    isTitleEditingRef.current = true;
     onTitleChange(newTitle);
     if (titleTimerRef.current) clearTimeout(titleTimerRef.current);
     titleTimerRef.current = setTimeout(() => {
       api.outlines.update(outlineId, newTitle);
     }, DEBOUNCE_SAVE_MS);
+    requestAnimationFrame(() => {
+      isTitleEditingRef.current = false;
+    });
   }, [outlineId, onTitleChange]);
 
   // Global Ctrl+/ to open search
