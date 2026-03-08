@@ -1,9 +1,12 @@
 /**
  * Database module barrel export.
  *
+ * @example
+ *   import { db, createDb, users, nodes, outlines, sessions } from '../db';
+ *
  * @consumers services/
- * @depends drizzle, PostgreSQL
+ * @depends drizzle-orm, postgres, PostgreSQL
  */
 
-// Database exports will be added in Phase 1
-export {};
+export { db, createDb, type Database } from './connection';
+export { users, outlines, nodes, sessions } from './schema';
