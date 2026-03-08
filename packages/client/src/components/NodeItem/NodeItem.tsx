@@ -34,6 +34,16 @@ export const NodeItem = memo(function NodeItem({
   const dispatch = useOutlineDispatch();
   const actions = useNodeActions(outlineId);
   const editorRef = useRef<HTMLDivElement>(null);
+  // Track whether the user is actively editing to avoid React clobbering the DOM
+  const isEditingRef = useRef(false);
+
+  // Sync content from props only when it changes externally (e.g. undo, SET_TREE)
+  useEffect(() => {
+    if (isEditingRef.current) return;
+    if (editorRef.current && editorRef.current.textContent !== node.content) {
+      editorRef.current.textContent = node.content;
+    }
+  }, [node.content]);
 
   const childNodes: Node[] = [];
   for (const n of nodes.values()) {
@@ -81,7 +91,12 @@ export const NodeItem = memo(function NodeItem({
 
   const handleInput = useCallback(() => {
     if (!editorRef.current) return;
+    isEditingRef.current = true;
     actions.updateNode(node.id, editorRef.current.textContent ?? '');
+    // Allow external sync again after a tick (debounced save will fire later)
+    requestAnimationFrame(() => {
+      isEditingRef.current = false;
+    });
   }, [node.id, actions]);
 
   const handleBulletClick = useCallback(() => {
@@ -137,9 +152,7 @@ export const NodeItem = memo(function NodeItem({
           onKeyDown={handleKeyDown}
           role="textbox"
           aria-label="Node content"
-        >
-          {node.content}
-        </div>
+        />
         {hasChildren && node.isCollapsed && (
           <span className={styles.childCount}>{childNodes.length}</span>
         )}
