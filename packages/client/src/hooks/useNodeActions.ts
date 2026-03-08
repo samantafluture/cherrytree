@@ -4,7 +4,7 @@
  * @example
  *   const { createNode, updateNode, deleteNode } = useNodeActions(outlineId);
  *
- * @consumers components/NodeItem, components/OutlineView
+ * @consumers components/NodeItem, components/OutlineView, hooks/useKeyboard
  * @depends api/, context/OutlineContext
  */
 
@@ -43,16 +43,12 @@ export function useNodeActions(outlineId: string) {
 
   const updateNode = useCallback(
     (nodeId: string, content: string) => {
-      // Optimistic update
       dispatch({
         type: 'UPDATE_NODE',
         payload: { id: nodeId, changes: { content } },
       });
-
-      // Debounced save
       const existing = saveTimers.current.get(nodeId);
       if (existing) clearTimeout(existing);
-
       saveTimers.current.set(
         nodeId,
         setTimeout(async () => {
@@ -74,6 +70,22 @@ export function useNodeActions(outlineId: string) {
       dispatch({ type: 'DELETE_NODE', payload: { id: nodeId } });
       dispatch({ type: 'SET_SYNC_STATUS', payload: { status: 'pending' } });
       const res = await api.nodes.delete(outlineId, nodeId);
+      dispatch({
+        type: 'SET_SYNC_STATUS',
+        payload: { status: res.error ? 'error' : 'synced' },
+      });
+    },
+    [outlineId, dispatch],
+  );
+
+  const moveNode = useCallback(
+    async (nodeId: string, parentId: string | null, position: number) => {
+      dispatch({
+        type: 'MOVE_NODE',
+        payload: { id: nodeId, parentId, position },
+      });
+      dispatch({ type: 'SET_SYNC_STATUS', payload: { status: 'pending' } });
+      const res = await api.nodes.move(outlineId, nodeId, parentId, position);
       dispatch({
         type: 'SET_SYNC_STATUS',
         payload: { status: res.error ? 'error' : 'synced' },
@@ -117,5 +129,12 @@ export function useNodeActions(outlineId: string) {
     [outlineId, dispatch],
   );
 
-  return { createNode, updateNode, deleteNode, toggleComplete, toggleCollapse };
+  return {
+    createNode,
+    updateNode,
+    deleteNode,
+    moveNode,
+    toggleComplete,
+    toggleCollapse,
+  };
 }

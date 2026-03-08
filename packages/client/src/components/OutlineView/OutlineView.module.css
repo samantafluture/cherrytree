@@ -35,6 +35,26 @@
   font-weight: 600;
 }
 
+.searchToggle {
+  background: var(--bg-hover);
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-mono);
+  transition:
+    color var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.searchToggle:hover {
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+}
+
 .syncStatus {
   font-size: var(--font-size-sm);
   color: var(--text-muted);

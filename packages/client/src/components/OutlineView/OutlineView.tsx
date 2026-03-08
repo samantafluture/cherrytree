@@ -1,20 +1,21 @@
 /**
- * Main outline view — fetches tree, renders breadcrumb + node list.
+ * Main outline view — fetches tree, renders breadcrumb + search + node list.
  *
  * @example
  *   <OutlineView outlineId={id} outlineTitle={title} />
  *
  * @consumers App.tsx
- * @depends hooks/useOutline, context/OutlineContext, components/NodeList, components/Breadcrumb
+ * @depends hooks/, context/, components/NodeList, components/Breadcrumb, components/SearchBar
  */
 
 import type { Node } from '@cherrytree/shared';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useOutlineData } from '../../context';
 import { useNodeActions, useOutline } from '../../hooks';
 import { Breadcrumb } from '../Breadcrumb/Breadcrumb';
 import { NodeList } from '../NodeList/NodeList';
+import { SearchBar } from '../SearchBar/SearchBar';
 
 import styles from './OutlineView.module.css';
 
@@ -32,11 +33,22 @@ export function OutlineView({
   const { loading, error } = useOutline(outlineId);
   const { nodes, rootIds, zoomedNodeId, syncStatus } = useOutlineData();
   const { createNode } = useNodeActions(outlineId);
+  const [searchOpen, setSearchOpen] = useState(false);
 
-  // Determine visible nodes based on zoom
+  // Global Ctrl+/ to open search
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === '/') {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, []);
+
   const visibleNodes: Node[] = useMemo(() => {
     if (zoomedNodeId) {
-      // Show children of zoomed node
       const children: Node[] = [];
       for (const node of nodes.values()) {
         if (node.parentId === zoomedNodeId) children.push(node);
@@ -66,6 +78,13 @@ export function OutlineView({
           ← Outlines
         </button>
         <h1 className={styles.title}>{outlineTitle}</h1>
+        <button
+          className={styles.searchToggle}
+          onClick={() => setSearchOpen(!searchOpen)}
+          aria-label="Search"
+        >
+          /
+        </button>
         <span className={styles.syncStatus} data-status={syncStatus}>
           {syncStatus === 'pending'
             ? 'Saving...'
@@ -74,6 +93,9 @@ export function OutlineView({
               : ''}
         </span>
       </div>
+      {searchOpen && (
+        <SearchBar outlineId={outlineId} onClose={() => setSearchOpen(false)} />
+      )}
       <Breadcrumb outlineTitle={outlineTitle} />
       <div className={styles.tree}>
         <NodeList nodes={visibleNodes} outlineId={outlineId} />

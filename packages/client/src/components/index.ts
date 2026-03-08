@@ -12,3 +12,4 @@ export { NodeItem } from './NodeItem/NodeItem';
 export { NodeList } from './NodeList/NodeList';
 export { OutlineList } from './OutlineList/OutlineList';
 export { OutlineView } from './OutlineView/OutlineView';
+export { SearchBar } from './SearchBar/SearchBar';

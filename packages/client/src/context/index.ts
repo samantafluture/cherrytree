@@ -1,8 +1,8 @@
 /**
  * Public API for context module.
  *
- * @consumers App.tsx, components/
- * @depends AuthContext.tsx, OutlineContext.tsx
+ * @consumers App.tsx, components/, hooks/
+ * @depends AuthContext.tsx, OutlineContext.tsx, outline-reducer.ts
  */
 
 export { AuthProvider, useAuth } from './AuthContext';
@@ -12,3 +12,9 @@ export {
   useOutlineDispatch,
 } from './OutlineContext';
 export type { OutlineState, OutlineAction } from './OutlineContext';
+export {
+  deriveRootIds,
+  getChildNodes,
+  getSiblings,
+  outlineReducer,
+} from './outline-reducer';

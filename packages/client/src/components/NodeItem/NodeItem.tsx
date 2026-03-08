@@ -5,14 +5,16 @@
  *   <NodeItem node={node} outlineId={id} depth={0} />
  *
  * @consumers components/NodeList
- * @depends components/BulletIcon, hooks/useNodeActions, context/OutlineContext
+ * @depends components/BulletIcon, hooks/, context/
  */
 
 import type { Node } from '@cherrytree/shared';
 import { memo, useCallback, useEffect, useRef } from 'react';
 
-import { useOutlineData, useOutlineDispatch } from '../../context';
-import { useNodeActions } from '../../hooks';
+import { getSiblings, useOutlineData, useOutlineDispatch } from '../../context';
+import { useDragDrop } from '../../hooks/useDragDrop';
+import { useKeyboard } from '../../hooks/useKeyboard';
+import { useNodeActions } from '../../hooks/useNodeActions';
 import { BulletIcon } from '../BulletIcon/BulletIcon';
 
 import styles from './NodeItem.module.css';
@@ -30,20 +32,38 @@ export const NodeItem = memo(function NodeItem({
 }: NodeItemProps) {
   const { focusedNodeId, nodes } = useOutlineData();
   const dispatch = useOutlineDispatch();
-  const { createNode, updateNode, deleteNode, toggleComplete, toggleCollapse } =
-    useNodeActions(outlineId);
+  const actions = useNodeActions(outlineId);
   const editorRef = useRef<HTMLDivElement>(null);
 
-  // Get children for this node
   const childNodes: Node[] = [];
   for (const n of nodes.values()) {
     if (n.parentId === node.id) childNodes.push(n);
   }
   childNodes.sort((a, b) => a.position - b.position);
-
   const hasChildren = childNodes.length > 0;
+  const siblings = getSiblings(nodes, node.parentId);
 
-  // Focus management
+  const { dragOver, handlers: dragHandlers } = useDragDrop(
+    node,
+    actions.moveNode,
+  );
+
+  const getContent = useCallback(
+    () => editorRef.current?.textContent ?? '',
+    [],
+  );
+
+  const handleKeyDown = useKeyboard({
+    node,
+    outlineId,
+    siblings,
+    getContent,
+    dispatch,
+    createNode: actions.createNode,
+    deleteNode: actions.deleteNode,
+    moveNode: actions.moveNode,
+  });
+
   useEffect(() => {
     if (focusedNodeId === node.id && editorRef.current) {
       editorRef.current.focus();
@@ -61,38 +81,25 @@ export const NodeItem = memo(function NodeItem({
 
   const handleInput = useCallback(() => {
     if (!editorRef.current) return;
-    const content = editorRef.current.textContent ?? '';
-    updateNode(node.id, content);
-  }, [node.id, updateNode]);
-
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey) {
-        e.preventDefault();
-        createNode('', node.parentId, node.position + 1);
-      }
-
-      if (e.key === 'Backspace') {
-        const content = editorRef.current?.textContent ?? '';
-        if (content === '') {
-          e.preventDefault();
-          deleteNode(node.id);
-        }
-      }
-
-      if (e.key === 'Enter' && e.ctrlKey) {
-        e.preventDefault();
-        toggleComplete(node.id, node.isCompleted);
-      }
-    },
-    [node, createNode, deleteNode, toggleComplete],
-  );
+    actions.updateNode(node.id, editorRef.current.textContent ?? '');
+  }, [node.id, actions]);
 
   const handleBulletClick = useCallback(() => {
     if (hasChildren) {
-      toggleCollapse(node.id, node.isCollapsed);
+      actions.toggleCollapse(node.id, node.isCollapsed);
+    } else {
+      dispatch({ type: 'ZOOM_TO', payload: { nodeId: node.id } });
     }
-  }, [hasChildren, node.id, node.isCollapsed, toggleCollapse]);
+  }, [hasChildren, node.id, node.isCollapsed, actions, dispatch]);
+
+  const rowClass = [
+    styles.row,
+    dragOver === 'above' ? styles.dropAbove : '',
+    dragOver === 'below' ? styles.dropBelow : '',
+    dragOver === 'child' ? styles.dropChild : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   const contentClass = [
     styles.content,
@@ -103,13 +110,24 @@ export const NodeItem = memo(function NodeItem({
 
   return (
     <div className={styles.nodeItem}>
-      <div className={styles.row}>
-        <BulletIcon
-          hasChildren={hasChildren}
-          collapsed={node.isCollapsed}
-          completed={node.isCompleted}
-          onClick={handleBulletClick}
-        />
+      <div
+        className={rowClass}
+        onDragOver={dragHandlers.onDragOver}
+        onDragLeave={dragHandlers.onDragLeave}
+        onDrop={dragHandlers.onDrop}
+      >
+        <div
+          draggable
+          onDragStart={dragHandlers.onDragStart}
+          className={styles.dragHandle}
+        >
+          <BulletIcon
+            hasChildren={hasChildren}
+            collapsed={node.isCollapsed}
+            completed={node.isCompleted}
+            onClick={handleBulletClick}
+          />
+        </div>
         <div
           ref={editorRef}
           className={contentClass}
@@ -122,6 +140,9 @@ export const NodeItem = memo(function NodeItem({
         >
           {node.content}
         </div>
+        {hasChildren && node.isCollapsed && (
+          <span className={styles.childCount}>{childNodes.length}</span>
+        )}
       </div>
       {hasChildren && !node.isCollapsed && (
         <div className={styles.children}>
