@@ -87,6 +87,12 @@ export const api = {
         body: JSON.stringify({ title }),
       });
     },
+    update(id: string, title: string) {
+      return request<Outline>(`/api/outlines/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ title }),
+      });
+    },
     delete(id: string) {
       return request<{ deleted: true }>(`/api/outlines/${id}`, {
         method: 'DELETE',

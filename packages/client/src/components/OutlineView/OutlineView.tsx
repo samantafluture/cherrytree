@@ -9,8 +9,10 @@
  */
 
 import type { Node } from '@cherrytree/shared';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { DEBOUNCE_SAVE_MS } from '@cherrytree/shared';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import { api } from '../../api';
 import { useOutlineData } from '../../context';
 import { useNodeActions, useOutline } from '../../hooks';
 import { Breadcrumb } from '../Breadcrumb/Breadcrumb';
@@ -23,17 +25,37 @@ type OutlineViewProps = {
   outlineId: string;
   outlineTitle: string;
   onBack: () => void;
+  onTitleChange: (title: string) => void;
 };
 
 export function OutlineView({
   outlineId,
   outlineTitle,
   onBack,
+  onTitleChange,
 }: OutlineViewProps) {
   const { loading, error } = useOutline(outlineId);
   const { nodes, rootIds, zoomedNodeId, syncStatus } = useOutlineData();
   const { createNode } = useNodeActions(outlineId);
   const [searchOpen, setSearchOpen] = useState(false);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const titleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (titleRef.current && titleRef.current.textContent !== outlineTitle) {
+      titleRef.current.textContent = outlineTitle;
+    }
+  }, [outlineTitle]);
+
+  const handleTitleInput = useCallback(() => {
+    const newTitle = titleRef.current?.textContent?.trim() ?? '';
+    if (!newTitle) return;
+    onTitleChange(newTitle);
+    if (titleTimerRef.current) clearTimeout(titleTimerRef.current);
+    titleTimerRef.current = setTimeout(() => {
+      api.outlines.update(outlineId, newTitle);
+    }, DEBOUNCE_SAVE_MS);
+  }, [outlineId, onTitleChange]);
 
   // Global Ctrl+/ to open search
   useEffect(() => {
@@ -77,7 +99,16 @@ export function OutlineView({
         <button className={styles.backButton} onClick={onBack}>
           ← Outlines
         </button>
-        <h1 className={styles.title}>{outlineTitle}</h1>
+        <h1
+          ref={titleRef}
+          className={styles.title}
+          contentEditable
+          suppressContentEditableWarning
+          onInput={handleTitleInput}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') e.preventDefault();
+          }}
+        />
         <button
           className={styles.searchToggle}
           onClick={() => setSearchOpen(!searchOpen)}
