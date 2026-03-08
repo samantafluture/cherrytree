@@ -12,6 +12,7 @@ import { useCallback, useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
 
 import { useAuth } from '../../context';
+import { Logo } from '../Logo/Logo';
 
 import styles from './AuthGate.module.css';
 
@@ -62,7 +63,9 @@ function AuthForm() {
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-        <h1 className={styles.title}>CherryTree</h1>
+        <div className={styles.title}>
+          <Logo />
+        </div>
         <p className={styles.subtitle}>
           {mode === 'login' ? 'Welcome back' : 'Create an account'}
         </p>

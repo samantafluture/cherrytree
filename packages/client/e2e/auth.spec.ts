@@ -24,7 +24,7 @@ test.describe('Auth', () => {
     await page.getByRole('button', { name: 'Sign up' }).first().click();
 
     // After registration, we should see the outline list
-    await expect(page.getByText('My Outlines')).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByRole('button', { name: 'New outline' })).toBeVisible({ timeout: 10_000 });
   });
 
   test('login with credentials', async ({ page }) => {
@@ -37,7 +37,7 @@ test.describe('Auth', () => {
     await page.getByPlaceholder('Username').fill(user.username);
     await page.getByPlaceholder('Password').fill(user.password);
     await page.getByRole('button', { name: 'Sign up' }).first().click();
-    await expect(page.getByText('My Outlines')).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByRole('button', { name: 'New outline' })).toBeVisible({ timeout: 10_000 });
 
     // Log out
     await page.getByRole('button', { name: 'Log out' }).click();
@@ -48,7 +48,7 @@ test.describe('Auth', () => {
     await page.getByPlaceholder('Password').fill(user.password);
     await page.getByRole('button', { name: 'Log in' }).first().click();
 
-    await expect(page.getByText('My Outlines')).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByRole('button', { name: 'New outline' })).toBeVisible({ timeout: 10_000 });
   });
 
   test('logout', async ({ page }) => {
@@ -61,7 +61,7 @@ test.describe('Auth', () => {
     await page.getByPlaceholder('Username').fill(user.username);
     await page.getByPlaceholder('Password').fill(user.password);
     await page.getByRole('button', { name: 'Sign up' }).first().click();
-    await expect(page.getByText('My Outlines')).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByRole('button', { name: 'New outline' })).toBeVisible({ timeout: 10_000 });
 
     // Log out
     await page.getByRole('button', { name: 'Log out' }).click();

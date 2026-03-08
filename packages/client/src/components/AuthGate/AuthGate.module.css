@@ -3,12 +3,12 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  padding: var(--space-md);
+  padding: var(--space-lg);
 }
 
 .card {
   width: 100%;
-  max-width: 380px;
+  max-width: 420px;
   padding: var(--space-xl);
   background: var(--bg-secondary);
   border-radius: var(--radius-md);
@@ -16,9 +16,8 @@
 }
 
 .title {
-  font-size: var(--font-size-lg);
-  font-weight: 700;
-  text-align: center;
+  display: flex;
+  justify-content: center;
   margin-bottom: var(--space-xs);
 }
 
@@ -37,7 +36,7 @@
 
 .input {
   width: 100%;
-  padding: var(--space-sm) var(--space-md);
+  padding: 12px var(--space-md);
   background: var(--bg-primary);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
@@ -53,15 +52,15 @@
 
 .button {
   width: 100%;
-  padding: var(--space-sm) var(--space-md);
+  padding: 12px var(--space-md);
   background: var(--accent);
   border: none;
   border-radius: var(--radius-sm);
-  color: #fff;
+  color: var(--text-primary);
   font-size: var(--font-size-base);
   font-weight: 600;
   cursor: pointer;
-  margin-top: var(--space-xs);
+  margin-top: var(--space-sm);
   transition: background var(--transition-fast);
 }
 
@@ -70,19 +69,20 @@
 }
 
 .button:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .error {
-  color: var(--accent);
+  color: var(--accent-hover);
   font-size: var(--font-size-sm);
   text-align: center;
+  font-weight: 500;
 }
 
 .toggle {
   text-align: center;
-  margin-top: var(--space-md);
+  margin-top: var(--space-lg);
   font-size: var(--font-size-sm);
   color: var(--text-secondary);
 }
@@ -93,9 +93,11 @@
   color: var(--accent);
   cursor: pointer;
   font-size: var(--font-size-sm);
+  font-weight: 500;
 }
 
 .toggleLink:hover {
+  color: var(--accent-hover);
   text-decoration: underline;
 }
 

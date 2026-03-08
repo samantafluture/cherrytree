@@ -2,8 +2,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border: none;
   background: none;
   cursor: pointer;
@@ -19,8 +19,8 @@
 
 .dot {
   display: block;
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--bullet-color);
   transition: background var(--transition-fast);
@@ -31,11 +31,10 @@
 }
 
 .parent .dot {
-  width: 8px;
-  height: 8px;
-  background: var(--bullet-color);
-  border: 1.5px solid var(--bullet-color);
+  width: 9px;
+  height: 9px;
   background: var(--bg-primary);
+  border: 2px solid var(--bullet-color);
 }
 
 .parent:hover .dot {
@@ -43,7 +42,8 @@
 }
 
 .collapsed .dot {
-  background: var(--bullet-color);
+  background: var(--accent);
+  border-color: var(--accent);
 }
 
 .completed .dot {

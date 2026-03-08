@@ -58,8 +58,8 @@ export function SearchBar({ outlineId, onClose }: SearchBarProps) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
-        <button className={styles.closeButton} onClick={onClose}>
-          Esc
+        <button className={styles.closeButton} onClick={onClose} aria-label="Close">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
         </button>
       </div>
       {(results.length > 0 || isSearching) && (

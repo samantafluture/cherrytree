@@ -103,8 +103,8 @@ export function OutlineView({
   return (
     <div className={styles.outlineView}>
       <div className={styles.header}>
-        <button className={styles.backButton} onClick={onBack}>
-          ← Outlines
+        <button className={styles.backButton} onClick={onBack} aria-label="Back">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5" /><path d="m12 19-7-7 7-7" /></svg>
         </button>
         <h1
           ref={titleRef}
@@ -121,7 +121,7 @@ export function OutlineView({
           onClick={() => setSearchOpen(!searchOpen)}
           aria-label="Search"
         >
-          /
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
         </button>
         <span className={styles.syncStatus} data-status={syncStatus}>
           {syncStatus === 'pending'
@@ -138,7 +138,8 @@ export function OutlineView({
       <div className={styles.tree}>
         <NodeList nodes={visibleNodes} outlineId={outlineId} />
         <button className={styles.addButton} onClick={handleAddRoot}>
-          + Add item
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M12 5v14" /><path d="M5 12h14" /></svg>
+          Add item
         </button>
       </div>
     </div>

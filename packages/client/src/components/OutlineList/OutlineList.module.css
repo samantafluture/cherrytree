@@ -1,19 +1,19 @@
 .container {
-  max-width: 600px;
+  max-width: 860px;
   margin: 0 auto;
-  padding: var(--space-xl) var(--space-md);
+  padding: var(--space-xl) var(--space-lg);
 }
 
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-xl);
 }
 
 .title {
-  font-size: var(--font-size-lg);
-  font-weight: 600;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
 }
 
 .actions {
@@ -22,11 +22,14 @@
 }
 
 .createButton {
-  padding: var(--space-xs) var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-lg);
   background: var(--accent);
   border: none;
   border-radius: var(--radius-sm);
-  color: #fff;
+  color: var(--text-primary);
   cursor: pointer;
   font-size: var(--font-size-sm);
   font-weight: 600;
@@ -38,13 +41,14 @@
 }
 
 .logoutButton {
-  padding: var(--space-xs) var(--space-md);
+  padding: var(--space-sm) var(--space-lg);
   background: none;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   color: var(--text-secondary);
   cursor: pointer;
   font-size: var(--font-size-sm);
+  font-weight: 500;
   transition:
     color var(--transition-fast),
     border-color var(--transition-fast);
@@ -58,21 +62,24 @@
 .list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: var(--space-sm);
 }
 
 .item {
   display: flex;
   align-items: center;
-  padding: var(--space-sm) var(--space-md);
+  padding: 14px var(--space-lg);
   background: var(--bg-secondary);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  transition: background var(--transition-fast);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast);
 }
 
 .item:hover {
-  background: var(--bg-hover);
+  background: var(--bg-elevated);
+  border-color: var(--border);
 }
 
 .itemTitle {
@@ -83,22 +90,33 @@
   cursor: pointer;
   text-align: left;
   font-size: var(--font-size-base);
+  font-weight: 500;
   padding: 0;
 }
 
 .deleteButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: none;
   border: none;
   color: var(--text-muted);
   cursor: pointer;
   padding: var(--space-xs);
-  font-size: var(--font-size-sm);
   border-radius: var(--radius-sm);
-  transition: color var(--transition-fast);
+  transition:
+    color var(--transition-fast),
+    background var(--transition-fast);
+  opacity: 0;
+}
+
+.item:hover .deleteButton {
+  opacity: 1;
 }
 
 .deleteButton:hover {
-  color: var(--accent);
+  color: var(--accent-hover);
+  background: var(--accent-subtle);
 }
 
 .empty {
@@ -109,6 +127,7 @@
 
 .empty p {
   margin-bottom: var(--space-md);
+  font-size: var(--font-size-base);
 }
 
 .loading {
