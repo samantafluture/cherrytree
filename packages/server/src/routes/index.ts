@@ -11,8 +11,16 @@
 
 import type { FastifyInstance } from 'fastify';
 
+import { authRoutes } from './auth';
+import { nodeRoutes } from './nodes';
+import { outlineRoutes } from './outlines';
+
 export function registerRoutes(server: FastifyInstance) {
   server.get('/health', async () => {
     return { status: 'ok' };
   });
+
+  server.register(authRoutes);
+  server.register(outlineRoutes);
+  server.register(nodeRoutes);
 }

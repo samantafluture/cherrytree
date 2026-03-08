@@ -9,12 +9,17 @@
  */
 
 import { API_PORT } from '@cherrytree/shared';
+import cors from '@fastify/cors';
 import Fastify from 'fastify';
 
+import { authPlugin, errorHandler } from './plugins';
 import { registerRoutes } from './routes';
 
 const server = Fastify({ logger: true });
 
+server.register(cors, { origin: true });
+server.register(errorHandler);
+server.register(authPlugin);
 registerRoutes(server);
 
 const start = async () => {
@@ -28,3 +33,5 @@ const start = async () => {
 };
 
 start();
+
+export { server };
