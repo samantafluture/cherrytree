@@ -1,0 +1,51 @@
+.bullet {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+}
+
+.bullet:hover {
+  background: var(--bg-hover);
+}
+
+.dot {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--bullet-color);
+  transition: background var(--transition-fast);
+}
+
+.bullet:hover .dot {
+  background: var(--bullet-hover);
+}
+
+.parent .dot {
+  width: 8px;
+  height: 8px;
+  background: var(--bullet-color);
+  border: 1.5px solid var(--bullet-color);
+  background: var(--bg-primary);
+}
+
+.parent:hover .dot {
+  border-color: var(--bullet-hover);
+}
+
+.collapsed .dot {
+  background: var(--bullet-color);
+}
+
+.completed .dot {
+  background: var(--completed-text);
+}
