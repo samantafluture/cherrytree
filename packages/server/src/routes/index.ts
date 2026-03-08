@@ -14,6 +14,7 @@ import type { FastifyInstance } from 'fastify';
 import { authRoutes } from './auth';
 import { nodeRoutes } from './nodes';
 import { outlineRoutes } from './outlines';
+import { tokenRoutes } from './tokens';
 
 export function registerRoutes(server: FastifyInstance) {
   server.get('/health', async () => {
@@ -23,4 +24,5 @@ export function registerRoutes(server: FastifyInstance) {
   server.register(authRoutes);
   server.register(outlineRoutes);
   server.register(nodeRoutes);
+  server.register(tokenRoutes);
 }

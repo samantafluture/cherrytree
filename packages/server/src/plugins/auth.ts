@@ -1,19 +1,21 @@
 /**
  * Auth plugin — extracts Bearer token and attaches user to request.
+ * Supports both session tokens and API tokens (ct_ prefix).
  *
  * @example
  *   import { authPlugin } from '../plugins';
  *   server.register(authPlugin);
  *
  * @consumers src/index.ts, routes/
- * @depends services/auth.service.ts, utils/errors
+ * @depends services/auth.service.ts, services/token.service.ts, utils/errors
  */
 
 import type { FastifyInstance, FastifyRequest } from 'fastify';
+import { eq } from 'drizzle-orm';
 import fp from 'fastify-plugin';
 
-import { db } from '../db';
-import { AuthService } from '../services';
+import { db, users } from '../db';
+import { AuthService, TokenService } from '../services';
 import { UnauthorizedError } from '../utils';
 
 // Extend Fastify's request type to include user
@@ -29,6 +31,7 @@ declare module 'fastify' {
 
 async function authPluginFn(server: FastifyInstance) {
   const authService = new AuthService(db);
+  const tokenService = new TokenService(db);
 
   server.decorateRequest('user', null);
 
@@ -50,16 +53,33 @@ async function authPluginFn(server: FastifyInstance) {
     }
 
     const token = authHeader.slice(7);
-    const user = await authService.validateSession(token);
-    if (!user) {
-      throw new UnauthorizedError('Invalid or expired session');
-    }
 
-    request.user = {
-      id: user.id,
-      email: user.email,
-      username: user.username,
-    };
+    // API token (ct_ prefix) or session token
+    if (token.startsWith('ct_')) {
+      const userId = await tokenService.validate(token);
+      if (!userId) {
+        throw new UnauthorizedError('Invalid or expired API token');
+      }
+      const [user] = await db.select().from(users).where(eq(users.id, userId));
+      if (!user) {
+        throw new UnauthorizedError('User not found');
+      }
+      request.user = {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+      };
+    } else {
+      const user = await authService.validateSession(token);
+      if (!user) {
+        throw new UnauthorizedError('Invalid or expired session');
+      }
+      request.user = {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+      };
+    }
   });
 }
 

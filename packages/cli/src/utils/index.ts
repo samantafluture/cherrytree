@@ -1,9 +1,22 @@
 /**
  * CLI utilities barrel export.
  *
- * @consumers commands/
- * @depends nothing
+ * @consumers commands/, src/index.ts
+ * @depends node:fs, node:os, @cherrytree/shared
  */
 
-// Utilities will be added in Phase 5
-export {};
+export {
+  readConfig,
+  saveConfig,
+  clearConfig,
+  resolveToken,
+  resolveBaseUrl,
+} from './config';
+export { createApiClient, type ApiClient } from './api-client';
+export {
+  printJson,
+  printOutlines,
+  printTree,
+  printNode,
+  printError,
+} from './output';

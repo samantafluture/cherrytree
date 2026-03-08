@@ -11,3 +11,4 @@
 export { AuthService } from './auth.service';
 export { NodeService } from './node.service';
 export { OutlineService } from './outline.service';
+export { TokenService } from './token.service';
