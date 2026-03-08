@@ -23,6 +23,10 @@ function AppContent() {
     setActive(null);
   }, []);
 
+  const handleTitleChange = useCallback((title: string) => {
+    setActive((prev) => (prev ? { ...prev, title } : null));
+  }, []);
+
   if (!active) {
     return <OutlineList onSelect={handleSelect} />;
   }
@@ -33,6 +37,7 @@ function AppContent() {
         outlineId={active.id}
         outlineTitle={active.title}
         onBack={handleBack}
+        onTitleChange={handleTitleChange}
       />
     </OutlineProvider>
   );

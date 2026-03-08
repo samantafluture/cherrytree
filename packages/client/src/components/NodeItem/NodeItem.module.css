@@ -8,10 +8,20 @@
   gap: var(--space-xs);
   padding: 2px 0;
   border-radius: var(--radius-sm);
+  position: relative;
 }
 
 .row:hover {
   background: var(--bg-hover);
+}
+
+.dragHandle {
+  cursor: grab;
+  flex-shrink: 0;
+}
+
+.dragHandle:active {
+  cursor: grabbing;
 }
 
 .content {
@@ -41,4 +51,28 @@
 
 .children {
   padding-left: 20px;
+}
+
+.childCount {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--text-muted);
+  background: var(--bg-hover);
+  padding: 0 var(--space-xs);
+  border-radius: var(--radius-sm);
+  line-height: 20px;
+  align-self: center;
+}
+
+/* Drop indicators */
+.dropAbove {
+  border-top: 2px solid var(--accent);
+}
+
+.dropBelow {
+  border-bottom: 2px solid var(--accent);
+}
+
+.dropChild {
+  background: var(--search-highlight);
 }

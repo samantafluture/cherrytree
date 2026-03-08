@@ -70,8 +70,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const res = await api.auth.login(email, password);
     if (res.error || !res.data) return res.error?.message ?? 'Login failed';
     setToken(res.data.token);
-    // We don't get user data from login, store email as identifier
-    const authUser: AuthUser = { id: '', email, username: '' };
+    const authUser: AuthUser = res.data.user
+      ? {
+          id: res.data.user.id,
+          email: res.data.user.email,
+          username: res.data.user.username,
+        }
+      : { id: '', email, username: '' };
     setUser(authUser);
     localStorage.setItem('cherrytree_user', JSON.stringify(authUser));
     return null;

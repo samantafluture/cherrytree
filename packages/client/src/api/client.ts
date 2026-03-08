@@ -39,6 +39,11 @@ async function request<T>(
     headers['Authorization'] = `Bearer ${authToken}`;
   }
 
+  // Only set Content-Type when there's a body to send
+  if (!options.body) {
+    delete headers['Content-Type'];
+  }
+
   const res = await fetch(path, { ...options, headers });
   const body = (await res.json()) as ApiResponse<T>;
 
@@ -53,7 +58,6 @@ type AuthData = {
   user: Pick<User, 'id' | 'email' | 'username'>;
   token: string;
 };
-type TokenData = { token: string };
 
 export const api = {
   auth: {
@@ -64,7 +68,7 @@ export const api = {
       });
     },
     login(email: string, password: string) {
-      return request<TokenData>('/auth/login', {
+      return request<AuthData>('/auth/login', {
         method: 'POST',
         body: JSON.stringify({ email, password }),
       });
@@ -84,6 +88,12 @@ export const api = {
     create(title?: string) {
       return request<Outline>('/api/outlines', {
         method: 'POST',
+        body: JSON.stringify({ title }),
+      });
+    },
+    update(id: string, title: string) {
+      return request<Outline>(`/api/outlines/${id}`, {
+        method: 'PATCH',
         body: JSON.stringify({ title }),
       });
     },

@@ -40,8 +40,10 @@ export function OutlineList({ onSelect }: OutlineListProps) {
   }, []);
 
   const handleDelete = useCallback(async (id: string) => {
-    await api.outlines.delete(id);
-    setOutlines((prev) => prev.filter((o) => o.id !== id));
+    const res = await api.outlines.delete(id);
+    if (!res.error) {
+      setOutlines((prev) => prev.filter((o) => o.id !== id));
+    }
   }, []);
 
   if (loading) {

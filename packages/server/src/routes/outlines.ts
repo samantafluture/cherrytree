@@ -46,6 +46,25 @@ export async function outlineRoutes(server: FastifyInstance) {
     return { data: outline, error: null };
   });
 
+  server.patch('/api/outlines/:id', {
+    schema: {
+      body: {
+        type: 'object',
+        required: ['title'],
+        properties: {
+          title: { type: 'string', minLength: 1, maxLength: 255 },
+        },
+      },
+    },
+    handler: async (request) => {
+      const { id } = request.params as { id: string };
+      const { title } = request.body as { title: string };
+      const outline = await outlineService.update(id, request.user.id, title);
+      if (!outline) throw new NotFoundError('Outline not found');
+      return { data: outline, error: null };
+    },
+  });
+
   server.delete('/api/outlines/:id', async (request) => {
     const { id } = request.params as { id: string };
     const deleted = await outlineService.delete(id, request.user.id);

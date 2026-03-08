@@ -283,6 +283,9 @@ pnpm test:watch           # Run tests in watch mode
 pnpm format               # Prettier format
 pnpm format:check         # Check formatting
 
+# E2E testing
+pnpm --filter @cherrytree/client run test:e2e   # Playwright E2E tests
+
 # Per-package
 pnpm --filter @cherrytree/server dev     # Server only
 pnpm --filter @cherrytree/client dev     # Client only
@@ -291,7 +294,32 @@ pnpm --filter @cherrytree/cli start      # Run CLI
 
 ---
 
-## 12. Architectural Checklist (Run Before Every PR)
+## 12. E2E Testing (Playwright)
+
+E2E tests live in `packages/client/e2e/` and use Playwright with Chromium.
+
+**When to run E2E tests:**
+- After any change to API routes, services, or the API client
+- After any UI component change that affects CRUD operations
+- After any auth flow changes
+- Before every PR
+
+**Test suites:**
+- `auth.spec.ts` — register, login, logout
+- `outline.spec.ts` — create, delete, edit title, persistence
+- `nodes.spec.ts` — add, edit, delete nodes, persistence
+
+**Writing E2E tests:**
+- Each test registers a unique user (use `Date.now()` timestamp)
+- For contentEditable elements, use `page.evaluate()` to set `textContent` and dispatch `input` event (Playwright's `keyboard.type()` doesn't work correctly with contentEditable)
+- Tests run sequentially (`workers: 1`) to avoid database race conditions
+- The `webServer` config auto-starts server and client if not already running
+
+**Important:** The agent/Claude Code must run E2E tests after implementing important features or bug fixes to verify the code works end-to-end.
+
+---
+
+## 13. Architectural Checklist (Run Before Every PR)
 
 - [ ] Every directory has a barrel `index.ts`
 - [ ] No file exceeds 200 lines
