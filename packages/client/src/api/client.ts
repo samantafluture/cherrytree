@@ -53,7 +53,6 @@ type AuthData = {
   user: Pick<User, 'id' | 'email' | 'username'>;
   token: string;
 };
-type TokenData = { token: string };
 
 export const api = {
   auth: {
@@ -64,7 +63,7 @@ export const api = {
       });
     },
     login(email: string, password: string) {
-      return request<TokenData>('/auth/login', {
+      return request<AuthData>('/auth/login', {
         method: 'POST',
         body: JSON.stringify({ email, password }),
       });

@@ -81,7 +81,16 @@ export async function authRoutes(server: FastifyInstance) {
         });
       }
 
-      return reply.send({ data: { token }, error: null });
+      const user = await authService.validateSession(token);
+      return reply.send({
+        data: {
+          user: user
+            ? { id: user.id, email: user.email, username: user.username }
+            : null,
+          token,
+        },
+        error: null,
+      });
     },
   });
 
