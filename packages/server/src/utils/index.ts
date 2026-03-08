@@ -1,9 +1,14 @@
 /**
  * Server utilities barrel export.
  *
- * @consumers services/, routes/
+ * @consumers services/, routes/, plugins/
  * @depends nothing
  */
 
-// Utilities will be added as needed
-export {};
+export {
+  AppError,
+  NotFoundError,
+  ForbiddenError,
+  ValidationError,
+  UnauthorizedError,
+} from './errors';

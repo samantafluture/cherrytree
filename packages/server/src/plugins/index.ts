@@ -5,5 +5,5 @@
  * @depends fastify
  */
 
-// Plugins will be added in Phase 2
-export {};
+export { errorHandler } from './error-handler';
+export { authPlugin } from './auth';
