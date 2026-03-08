@@ -6,7 +6,7 @@
   display: flex;
   align-items: flex-start;
   gap: var(--space-xs);
-  padding: 2px 0;
+  padding: 3px 0;
   border-radius: var(--radius-sm);
   position: relative;
 }
@@ -26,8 +26,8 @@
 
 .content {
   flex: 1;
-  min-height: 24px;
-  padding: 0 var(--space-xs);
+  min-height: 28px;
+  padding: 2px var(--space-sm);
   outline: none;
   line-height: var(--line-height);
   word-break: break-word;
@@ -50,18 +50,19 @@
 }
 
 .children {
-  padding-left: 20px;
+  padding-left: 24px;
 }
 
 .childCount {
   flex-shrink: 0;
   font-size: 11px;
-  color: var(--text-muted);
-  background: var(--bg-hover);
-  padding: 0 var(--space-xs);
+  color: var(--text-secondary);
+  background: var(--bg-elevated);
+  padding: 2px var(--space-sm);
   border-radius: var(--radius-sm);
-  line-height: 20px;
+  line-height: 18px;
   align-self: center;
+  font-weight: 500;
 }
 
 /* Drop indicators */
@@ -74,5 +75,5 @@
 }
 
 .dropChild {
-  background: var(--search-highlight);
+  background: var(--accent-subtle);
 }

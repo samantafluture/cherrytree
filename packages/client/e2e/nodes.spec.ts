@@ -19,21 +19,21 @@ async function registerAndOpenOutline(page: Page) {
   await page.getByPlaceholder('Username').fill(user.username);
   await page.getByPlaceholder('Password').fill(user.password);
   await page.getByRole('button', { name: 'Sign up' }).first().click();
-  await expect(page.getByText('My Outlines')).toBeVisible({ timeout: 10_000 });
+  await expect(page.getByRole('button', { name: 'New outline' })).toBeVisible({ timeout: 10_000 });
 
   // Create and open an outline
-  await page.getByRole('button', { name: '+ New outline' }).click();
+  await page.getByRole('button', { name: 'New outline' }).click();
   await page.locator('[class*="itemTitle"]').first().click();
-  await expect(page.getByRole('button', { name: '+ Add item' })).toBeVisible({
+  await expect(page.getByRole('button', { name: 'Add item' })).toBeVisible({
     timeout: 5_000,
   });
 }
 
 test.describe('Nodes', () => {
-  test('add a node via "+ Add item" button', async ({ page }) => {
+  test('add a node via "Add item" button', async ({ page }) => {
     await registerAndOpenOutline(page);
 
-    await page.getByRole('button', { name: '+ Add item' }).click();
+    await page.getByRole('button', { name: 'Add item' }).click();
 
     // A new node with a contentEditable textbox should appear
     const nodeEditors = page.getByRole('textbox', { name: 'Node content' });
@@ -44,7 +44,7 @@ test.describe('Nodes', () => {
     await registerAndOpenOutline(page);
 
     // Add a node
-    await page.getByRole('button', { name: '+ Add item' }).click();
+    await page.getByRole('button', { name: 'Add item' }).click();
     const nodeEditor = page.getByRole('textbox', { name: 'Node content' }).first();
     await expect(nodeEditor).toBeVisible({ timeout: 5_000 });
 
@@ -69,7 +69,7 @@ test.describe('Nodes', () => {
     await registerAndOpenOutline(page);
 
     // Add a node
-    await page.getByRole('button', { name: '+ Add item' }).click();
+    await page.getByRole('button', { name: 'Add item' }).click();
     const nodeEditor = page.getByRole('textbox', { name: 'Node content' }).first();
     await expect(nodeEditor).toBeVisible({ timeout: 5_000 });
 
@@ -103,7 +103,7 @@ test.describe('Nodes', () => {
     await registerAndOpenOutline(page);
 
     // Add a node with content
-    await page.getByRole('button', { name: '+ Add item' }).click();
+    await page.getByRole('button', { name: 'Add item' }).click();
     const nodeEditor = page.getByRole('textbox', { name: 'Node content' }).first();
     await expect(nodeEditor).toBeVisible({ timeout: 5_000 });
 
@@ -125,11 +125,11 @@ test.describe('Nodes', () => {
 
     // Reload the page — goes back to outline list since route state is in memory
     await page.reload();
-    await expect(page.getByText('My Outlines')).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByRole('button', { name: 'New outline' })).toBeVisible({ timeout: 10_000 });
 
     // Re-open the outline
     await page.locator('[class*="itemTitle"]').first().click();
-    await expect(page.getByRole('button', { name: '+ Add item' })).toBeVisible({
+    await expect(page.getByRole('button', { name: 'Add item' })).toBeVisible({
       timeout: 5_000,
     });
 
@@ -141,7 +141,7 @@ test.describe('Nodes', () => {
     await registerAndOpenOutline(page);
 
     // Add a node and type content
-    await page.getByRole('button', { name: '+ Add item' }).click();
+    await page.getByRole('button', { name: 'Add item' }).click();
     const firstNode = page.getByRole('textbox', { name: 'Node content' }).first();
     await expect(firstNode).toBeVisible({ timeout: 5_000 });
     await firstNode.evaluate((el) => {
@@ -158,12 +158,12 @@ test.describe('Nodes', () => {
     const allNodes = page.getByRole('textbox', { name: 'Node content' });
     await expect(allNodes).toHaveCount(2, { timeout: 5_000 });
 
-    // The second node should be focused (active element)
-    await page.waitForTimeout(500);
-    const focused = await page.evaluate(() => {
-      const active = document.activeElement;
-      return active?.getAttribute('aria-label');
-    });
-    expect(focused).toBe('Node content');
+    // Verify focus lands on a Node content textbox (retries to handle REPLACE_NODE swap)
+    await expect(async () => {
+      const ariaLabel = await page.evaluate(
+        () => document.activeElement?.getAttribute('aria-label'),
+      );
+      expect(ariaLabel).toBe('Node content');
+    }).toPass({ timeout: 5_000 });
   });
 });

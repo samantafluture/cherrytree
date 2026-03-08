@@ -22,8 +22,9 @@
   border: none;
   color: var(--text-secondary);
   cursor: pointer;
-  padding: 2px var(--space-xs);
+  padding: 2px var(--space-sm);
   border-radius: var(--radius-sm);
+  font-weight: 500;
   transition:
     color var(--transition-fast),
     background var(--transition-fast);
@@ -36,4 +37,5 @@
 
 .current {
   color: var(--text-primary);
+  font-weight: 500;
 }

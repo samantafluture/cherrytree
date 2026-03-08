@@ -17,7 +17,7 @@ async function registerAndLogin(page: Page) {
   await page.getByPlaceholder('Username').fill(user.username);
   await page.getByPlaceholder('Password').fill(user.password);
   await page.getByRole('button', { name: 'Sign up' }).first().click();
-  await expect(page.getByText('My Outlines')).toBeVisible({ timeout: 10_000 });
+  await expect(page.getByRole('button', { name: 'New outline' })).toBeVisible({ timeout: 10_000 });
 }
 
 const outlineItem = (page: Page) =>
@@ -27,7 +27,7 @@ test.describe('Outlines', () => {
   test('create an outline', async ({ page }) => {
     await registerAndLogin(page);
 
-    await page.getByRole('button', { name: '+ New outline' }).click();
+    await page.getByRole('button', { name: 'New outline' }).click();
 
     // A new outline item should appear in the list
     await expect(outlineItem(page).first()).toBeVisible({ timeout: 5_000 });
@@ -38,7 +38,7 @@ test.describe('Outlines', () => {
     await registerAndLogin(page);
 
     // Create an outline first
-    await page.getByRole('button', { name: '+ New outline' }).click();
+    await page.getByRole('button', { name: 'New outline' }).click();
     await expect(outlineItem(page).first()).toBeVisible({ timeout: 5_000 });
 
     // Delete it — the bug was that DELETE requests sent Content-Type: application/json
@@ -50,7 +50,7 @@ test.describe('Outlines', () => {
 
     // Verify it persists after refresh
     await page.reload();
-    await expect(page.getByText('My Outlines')).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByRole('button', { name: 'New outline' })).toBeVisible({ timeout: 10_000 });
     await expect(outlineItem(page)).toHaveCount(0, { timeout: 5_000 });
   });
 
@@ -58,11 +58,11 @@ test.describe('Outlines', () => {
     await registerAndLogin(page);
 
     // Create and open an outline
-    await page.getByRole('button', { name: '+ New outline' }).click();
+    await page.getByRole('button', { name: 'New outline' }).click();
     await outlineItem(page).first().click();
 
     // Wait for outline view to load
-    await expect(page.getByRole('button', { name: '+ Add item' })).toBeVisible({
+    await expect(page.getByRole('button', { name: 'Add item' })).toBeVisible({
       timeout: 5_000,
     });
 
@@ -83,7 +83,7 @@ test.describe('Outlines', () => {
     await page.waitForTimeout(2_000);
 
     // Go back to outline list
-    await page.getByRole('button', { name: /Outlines/ }).click();
+    await page.getByRole('button', { name: 'Back' }).click();
 
     // The updated title should be visible
     await expect(page.getByText(newTitle)).toBeVisible({ timeout: 5_000 });
@@ -93,11 +93,11 @@ test.describe('Outlines', () => {
     await registerAndLogin(page);
 
     // Create an outline
-    await page.getByRole('button', { name: '+ New outline' }).click();
+    await page.getByRole('button', { name: 'New outline' }).click();
 
     // Open it and change the title
     await outlineItem(page).first().click();
-    await expect(page.getByRole('button', { name: '+ Add item' })).toBeVisible({
+    await expect(page.getByRole('button', { name: 'Add item' })).toBeVisible({
       timeout: 5_000,
     });
 
@@ -116,7 +116,7 @@ test.describe('Outlines', () => {
 
     // Refresh page — goes back to outline list (state is in-memory)
     await page.reload();
-    await expect(page.getByText('My Outlines')).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByRole('button', { name: 'New outline' })).toBeVisible({ timeout: 10_000 });
     await expect(page.getByText(persistTitle)).toBeVisible({ timeout: 5_000 });
   });
 });

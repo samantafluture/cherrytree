@@ -1,24 +1,27 @@
 .outlineView {
-  max-width: 720px;
+  max-width: 960px;
   margin: 0 auto;
-  padding: var(--space-lg) var(--space-md);
+  padding: var(--space-xl) var(--space-lg);
 }
 
 .header {
   display: flex;
   align-items: center;
   gap: var(--space-md);
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-lg);
 }
 
 .backButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: none;
   border: none;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   cursor: pointer;
-  padding: var(--space-xs) var(--space-sm);
+  width: 36px;
+  height: 36px;
   border-radius: var(--radius-sm);
-  font-size: var(--font-size-sm);
   transition:
     color var(--transition-fast),
     background var(--transition-fast);
@@ -26,25 +29,26 @@
 
 .backButton:hover {
   color: var(--text-primary);
-  background: var(--bg-hover);
+  background: var(--bg-elevated);
 }
 
 .title {
   flex: 1;
-  font-size: var(--font-size-lg);
-  font-weight: 600;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
 }
 
 .searchToggle {
-  background: var(--bg-hover);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
   border: none;
   color: var(--text-muted);
   cursor: pointer;
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--radius-sm);
-  font-size: var(--font-size-sm);
-  font-family: var(--font-mono);
   transition:
     color var(--transition-fast),
     background var(--transition-fast);
@@ -52,7 +56,7 @@
 
 .searchToggle:hover {
   color: var(--text-primary);
-  background: var(--bg-secondary);
+  background: var(--bg-elevated);
 }
 
 .syncStatus {
@@ -61,31 +65,36 @@
 }
 
 .syncStatus[data-status='error'] {
-  color: var(--accent);
+  color: var(--accent-hover);
 }
 
 .tree {
-  padding-top: var(--space-sm);
+  padding-top: var(--space-md);
 }
 
 .addButton {
-  display: block;
-  margin-top: var(--space-sm);
-  padding: var(--space-xs) var(--space-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-top: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
   background: none;
-  border: none;
+  border: 1px dashed var(--border);
   color: var(--text-muted);
   cursor: pointer;
   font-size: var(--font-size-sm);
+  font-weight: 500;
   border-radius: var(--radius-sm);
   transition:
     color var(--transition-fast),
-    background var(--transition-fast);
+    background var(--transition-fast),
+    border-color var(--transition-fast);
 }
 
 .addButton:hover {
-  color: var(--text-primary);
-  background: var(--bg-hover);
+  color: var(--accent-light);
+  background: var(--accent-subtle);
+  border-color: var(--accent-muted);
 }
 
 .loading {
@@ -97,5 +106,6 @@
 .error {
   text-align: center;
   padding: var(--space-xl);
-  color: var(--accent);
+  color: var(--accent-hover);
+  font-weight: 500;
 }
