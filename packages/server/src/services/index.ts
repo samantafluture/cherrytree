@@ -1,9 +1,12 @@
 /**
  * Service layer barrel export.
  *
+ * @example
+ *   import { NodeService, OutlineService } from '../services';
+ *
  * @consumers routes/
  * @depends db/
  */
 
-// Services will be added in Phase 1
-export {};
+export { NodeService } from './node.service';
+export { OutlineService } from './outline.service';
