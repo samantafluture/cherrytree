@@ -9,7 +9,7 @@
  */
 
 import type { Node } from '@cherrytree/shared';
-import { memo, useCallback, useEffect, useRef } from 'react';
+import { memo, useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 
 import { getSiblings, useOutlineData, useOutlineDispatch } from '../../context';
 import { useDragDrop } from '../../hooks/useDragDrop';
@@ -74,23 +74,31 @@ export const NodeItem = memo(function NodeItem({
     moveNode: actions.moveNode,
   });
 
-  useEffect(() => {
+  // useLayoutEffect to apply focus synchronously before paint — prevents
+  // contentEditable h1 from stealing focus between DOM commit and effect.
+  useLayoutEffect(() => {
     if (focusedNodeId === node.id && editorRef.current) {
-      editorRef.current.focus();
-      const range = document.createRange();
-      const sel = window.getSelection();
-      if (editorRef.current.childNodes.length > 0) {
-        range.selectNodeContents(editorRef.current);
-        range.collapse(false);
-      }
-      sel?.removeAllRanges();
-      sel?.addRange(range);
-      // Defer clearing so REPLACE_NODE can transfer focusedNodeId before it's nulled
-      requestAnimationFrame(() => {
-        dispatch({ type: 'FOCUS_NODE', payload: { nodeId: null } });
-      });
+      const el = editorRef.current;
+      const applyFocus = () => {
+        el.focus();
+        if (el.childNodes.length > 0) {
+          const range = document.createRange();
+          const sel = window.getSelection();
+          range.selectNodeContents(el);
+          range.collapse(false);
+          sel?.removeAllRanges();
+          sel?.addRange(range);
+        }
+      };
+      applyFocus();
+      // Fallback: contentEditable elements elsewhere can steal focus after
+      // layout effects when React unmounts/remounts keyed nodes (REPLACE_NODE).
+      const timer = setTimeout(() => {
+        if (document.activeElement !== el) applyFocus();
+      }, 0);
+      return () => clearTimeout(timer);
     }
-  }, [focusedNodeId, node.id, dispatch]);
+  }, [focusedNodeId, node.id]);
 
   const handleInput = useCallback(() => {
     if (!editorRef.current) return;

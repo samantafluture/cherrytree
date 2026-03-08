@@ -66,6 +66,26 @@ export const nodes = pgTable(
   ],
 );
 
+export const apiTokens = pgTable(
+  'api_tokens',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    name: varchar('name', { length: 100 }).notNull(),
+    tokenHash: varchar('token_hash', { length: 255 }).notNull(),
+    tokenPrefix: varchar('token_prefix', { length: 10 }).notNull(),
+    expiresAt: timestamp('expires_at'),
+    lastUsedAt: timestamp('last_used_at'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    index('idx_api_tokens_user').on(table.userId),
+    index('idx_api_tokens_prefix').on(table.tokenPrefix),
+  ],
+);
+
 export const sessions = pgTable(
   'sessions',
   {

@@ -9,4 +9,4 @@
  */
 
 export { db, createDb, type Database } from './connection';
-export { users, outlines, nodes, sessions } from './schema';
+export { users, outlines, nodes, sessions, apiTokens } from './schema';
